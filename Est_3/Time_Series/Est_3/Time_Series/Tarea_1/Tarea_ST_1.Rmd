@@ -194,14 +194,28 @@ smoothing) para las series de tiempo y el método de Holt Winters.
 
 En las notas del curso se nos describe de manera breve y concisa cómo es que funcionan:
 
-"Son básicamente promedios ponderados de observaciones pasadas, con los pesos 
-decayendo exponencialmente a medida que las obsrvaciones <<envejecen>>(...). 
 La selección del método se basa generalmente en el reconocimiento de la tendencia y estacionalidad, 
 así como en la forma en que estos entran en el método de suavizamiento, como aditiva o 
-multiplicativa"
+multiplicativa".
+Generalmente se usa el promedio para pronosticar si todos los pronósticos futuros son iguales
+a un promedio simple de los datos obervados, puede ser sensato asignar mayor peso a las obser-
+vaciones más recientes que a las del pasado más distante. En palabras más simples podemos definir-
+lo de la siguiente manera: 
+"Son básicamente promedios ponderados de observaciones pasadas, con los pesos 
+decayendo exponencialmente a medida que las observaciones "envejecen"(...). 
+
+Por otro lado, el método de Holt Winters habla de la forma del componente para el método aditivo y
+el método multiplicativo.
 
 Más especificamente, el método de Holt Winters amplía el suavizado simple exponencial
-para permitir además el pronóstico de datos con tendencoa y capturar la estacionalidad
+para permitir además el pronóstico de datos con tendencia y capturar la estacionalidad, además
+la ecuación estacional muestra un promedio ponderado entre el índice estacional actual y el índice 
+estacional pero un año atrás. 
+
+El método multiplicativo es similar al aditivo. El método de multiplicativo de Holt-Winters también 
+calcula valores suavizados simple exponencialmente para el nivel, tendencia y ajuste estacional para 
+la previsión. Este método multiplica la previsión con tendencia por la estacionalidad, lo que produce
+la previsión de multiplicativo de Holt-Winters.
 
 5.- Use el método de Holt Winters para el ajuste de la curva y predicción de los datos de 3
 años futuros.
