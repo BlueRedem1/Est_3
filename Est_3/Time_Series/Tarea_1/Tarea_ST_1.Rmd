@@ -1,0 +1,148 @@
+---
+title: "Tarea 1"
+author: "Cuéllar, E. Tapia, J. Maciel, J. Saldaña, R. Miranda, G"
+date: "15/Oct/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1.- Grafique los datos. Describa lo que observe de su información (varianza contante o no
+constante, tendencia, ciclos estacionales, periodicidad de los ciclos).
+
+```{r,echo=FALSE, message=FALSE}
+#Cargamos las librerías
+library(forecast)
+library(forecast)
+library(astsa)
+library(nortest)
+library(lmtest)
+#Leemos los datos
+Data<-read.table("https://robjhyndman.com/tsdldata/data/fancy.dat", 
+           header=F, skip=0)
+#Los pasamos a series de tiempo
+Serie<-ts(data=Data,start=c(1987,01),end=c(1993,12),frequency=12)
+```
+
+## Gráfica de la serie de tiempo
+
+```{r, echo=FALSE, message=FALSE}
+ts.plot(Serie)
+```
+
+## Varianza
+
+Podemos observar una varianza creciente conforme pasa el tiempo, teniendo primero
+un ligero aumento de 1987 a 1990 de manera lineal, después parece que se mantene constante de 1990 a 1991 
+para posteriormente crecer demasiado de 1991 a 1994 Es decir, no es constante la varianza.
+Lo que hace que se dispare es la temporada alta vacacional (Al parecer, en noviembre
+y diciembre, ya que analizamos una playa en Australia, donde el verano comienza en diciembre)
+
+## Tendencia
+
+La tendencia parece ser en general creciente, repitiendo casi el mismo patrón que 
+la varianza: Es creciente de manera ligera (lineal, con pendiente pequeña) de 1987
+a 1990, para después decrecer un poco de 1990 a 1991, sin embargo crece de manera 
+cuadrática, al parecer, de 1991 a 1994.
+
+
+## Ciclos estacionales
+
+Dado que estamos analizando una base de datos de ventas mensuales de una tienda de souvenirs 
+en una playa en Asutralia, hace todo el sentido del mundo que tenga un ciclo ya que
+tanto en las ventas como visitas a sitios vacacionales hay una fuerte dependencia 
+en los meses del año. Esto lo confirmamos con la gráfica, donde se observa un
+ciclo estacional bastante claro.
+
+## Periodicidad de los ciclos
+
+Complementando el comentario del punto anterior, en la gráfica observamos que
+el ciclo es anual. De enero a febrero (o los primeros meses del año)parece crecer ligeramente, 
+depués baja un poco para crecer de manera ligera nuevamente, pero al llegar lo que parece ser 
+noviembre y diciembre (o los últimos meses del año)crece exageradamente; posteriormente 
+baja de diciembre a enero y se repite el ciclo.
+
+2.-Si la base presenta datos faltantes NA. Use algún método de imputación de la paquetería
+imputeTS.
+
+No hay ningún NA, como podemos observar
+
+```{r,echo=FALSE}
+sum(is.na(Serie))
+```
+Por lo que no es necesario aplicar ningún método de imputación
+
+3.- Use distintos métodos de descomposición de las series para obtener sus componentes
+(tendencia y ciclos estacionales), en específico use los siguientes:
+
+(a) Ajuste de curvas (modelos deterministas o de regresión).
+Realice un pronóstico de 3 años futuros.
+
+Primero realizareos una transformación con el logarítmo para estabilizar la varianza
+
+```{r}
+Serie_ln<-sqrt(log(Serie))
+ts.plot(Serie_ln)
+```
+
+Al parecer, la varianza ya se estabilizó considerablemente. 
+
+Como la tendencia parece seguir un comportamiento de un polinomio de grado 2,
+intentaremos ajustarle una curva con dicho polinomio
+
+```{r}
+M <- factor(cycle(Serie_ln))
+t = time(Serie_ln)-1987 
+regresion_1= lm(Serie_ln ~ 0+ t+M,  na.action=NULL)
+summary(regresion_1)
+par(mfrow=c(1,2))
+plot(Serie_ln, type="o",col='brown')
+lines(fitted(regresion_1), col='black')
+```
+
+Observamos que todos los valores,tienen un p-value menor
+a $0.05$. Entonces, quitando el efecto de ciclos estacionales, sigue una tendencia
+lineal.
+
+$\mathbb{E}[X_t]= 0.26872t+M$
+
+Donde M es la parte del ciclo estacional.
+
+Ajustamos:
+
+
+```{r regresion_1}
+tnew = 7 + seq(0,3,length.out=37)
+Mnew = factor(c((1:12),(1:12),(1:12),1))
+pred1<- predict(regresion_1, newdata=list(t=tnew, M=Mnew), interval="prediction")
+par(mfrow=c(1,2))
+ts.plot(Serie_ln, xlim=c(1987,1998))
+lines(1987+tnew,(pred1[,1]), lty=1,col=2)
+lines(1987+tnew,(pred1[,2]), lty=2,col=4)
+lines(1987+tnew,(pred1[,3]), lty=2,col=4)
+ts.plot(Serie_ln, xlim=c(1987,1998))
+lines(1987+tnew,exp(pred1[,1]**2), lty=1,col=2)
+lines(1987+tnew,exp(pred1[,2]**2), lty=2,col=4)
+lines(1987+tnew,exp(pred1[,3]**2), lty=2,col=4)
+```
+
+Ahora comprobemos los supuestos de regresión
+
+```{r}
+tsdisplay(regresion_1$res)
+qqnorm(regresion_1$res)
+qqline(regresion_1$res)
+ad.test(regresion_1$res)
+
+bptest(regresion_1)
+```
+
+Pasamos los tests de Normalidad y homocedasticidad.
+
+(b) Filtros lineales o suavizamientos exponenciales.
+Realice un pronóstico de 3 años futuros.
+
+
+
+(c) Diferencias.
