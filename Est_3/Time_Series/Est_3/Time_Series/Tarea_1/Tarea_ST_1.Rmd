@@ -164,7 +164,7 @@ compon = ts(compon, start=start(xt), frequency=12)
 
 par(mfrow=c(1,2))
 plot(Serie,main='Serie original')
-lines(exp(compon**2),col="green")
+lines(exp(compon**2),col="gold")
 plot(aleatorio,main='aleatorio')
 
 ```
