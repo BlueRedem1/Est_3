@@ -97,7 +97,7 @@ t = time(Serie_ln)-1987
 regresion_1= lm(Serie_ln ~ 0+ t+M,  na.action=NULL)
 summary(regresion_1)
 par(mfrow=c(1,2))
-plot(Serie_ln, type="o",col='brown')
+plot(Serie_ln, type="o",col='darkorange1')
 lines(fitted(regresion_1), col='black')
 ```
 
@@ -164,7 +164,7 @@ compon = ts(compon, start=start(xt), frequency=12)
 
 par(mfrow=c(1,2))
 plot(Serie,main='Serie original')
-lines(exp(compon**2),col="gold")
+lines(exp(compon**2),col="deeppink1")
 plot(aleatorio,main='aleatorio')
 
 ```
@@ -196,13 +196,13 @@ En las notas del curso se nos describe de manera breve y concisa cómo es que fu
 
 La selección del método se basa generalmente en el reconocimiento de la tendencia y estacionalidad, 
 así como en la forma en que estos entran en el método de suavizamiento, como aditiva o 
-multiplicativa".
+multiplicativa.
 Generalmente se usa el promedio para pronosticar si todos los pronósticos futuros son iguales
-a un promedio simple de los datos obervados, puede ser sensato asignar mayor peso a las obser-
-vaciones más recientes que a las del pasado más distante. En palabras más simples podemos definir-
+a un promedio simple de los datos obervados, puede ser sensato asignar mayor peso a las obser
+vaciones más recientes que a las del pasado más distante. En palabras más simples podemos definir
 lo de la siguiente manera: 
 "Son básicamente promedios ponderados de observaciones pasadas, con los pesos 
-decayendo exponencialmente a medida que las observaciones "envejecen"(...). 
+decayendo exponencialmente a medida que las observaciones "envejecen"(...)". 
 
 Por otro lado, el método de Holt Winters habla de la forma del componente para el método aditivo y
 el método multiplicativo.
