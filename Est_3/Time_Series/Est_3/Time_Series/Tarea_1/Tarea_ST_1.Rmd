@@ -19,6 +19,7 @@ library(astsa)
 library(nortest)
 library(lmtest)
 #Leemos los datos
+#Probando
 Data<-read.table("https://robjhyndman.com/tsdldata/data/fancy.dat", 
            header=F, skip=0)
 #Los pasamos a series de tiempo
